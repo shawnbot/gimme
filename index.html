@@ -37,11 +37,20 @@
 
 		<div class="example">
 			<h2>Polymaps-supported Data Images</h2>
-			<p>This example demonstrates how to:</p>
-			<ul>
-				<li>store geographic information (in this case, latitude, longitude and zoom level) along with a static image using <a href="http://dev.w3.org/html5/spec/Overview.html#embedding-custom-non-visible-data-with-the-data-attributes">HTML5 custom data attributes</a>.</li>
-				<li>use a <a href="src/minimap.js">stripped-down version</a> of <a href="http://polymaps.org">Polymaps</a> for client-side coordinate projection (<strong>Note: no SVG is generated in this example.</strong>)</li>
-			</ul>
+			<p>This example consists of three pieces:</p>
+			<ol>
+				<li>a static image of the Mission neighborhood in San Francisco (stolen
+				from <a href="http://shawnbot.github.com/geoff/">geoff</a>) that stores
+				the map projection info in <a
+					href="http://dev.w3.org/html5/spec/Overview.html#embedding-custom-non-visible-data-with-the-data-attributes">HTML
+					custom data attributes</a></li>
+				<li>a <a href="data/mission.js">GeoJSON</a> representation of the
+				Mission neighborhood polygon</li>
+				<li>a <a href="src/minimap.js">stripped-down version</a> of <a
+					href="http://polymaps.org">Polymaps</a> for client-side coordinate
+				projection (<strong>Note: no SVG is generated in this
+					example.</strong>)</li>
+			</ol>
 			<div class="map" id="map2">
 				<script type="text/javascript" src="src/minimap.js"></script>
 				<script type="text/javascript" src="data/mission.js"></script>
@@ -76,10 +85,11 @@
 			<p>TMI can overlay transparent image maps on top of
 			<i>non-interactive</i> <a
 				href="https://github.com/stamen/modestmaps-js">modestmaps-js</a> maps.
-			This example links to neighborhoods from the San Francisco Association of
-			Realtors (SFAR), converted from an <a
-				href="http://datasf.org/story.php?title=realtor-neighborhoods-">ESRI
-				shapefile</a> to GeoJSON using <a href="http://www.gdal.org/ogr2ogr.html">ogr2ogr</a>.</p>
+			This example links <a
+				href="http://datasf.org/story.php?title=realtor-neighborhoods-">neighborhood
+				areas</a> from the San Francisco Association of Realtors (SFAR) to the
+			corresponding <a href="http://maps.google.com/maps">Google Maps</a>
+			search results.</p> 
 
 			<div class="map" id="map1">
 				<script type="text/javascript" src="lib/modestmaps.min.js"></script>
@@ -97,7 +107,7 @@
 						.src("data/blank.png")
 						.data(sf_hoods)
 						.attr("href", function(feature) {
-							return "data/" + feature.properties["NBRHOOD"] + ".html";
+							return "http://maps.google.com/maps?q=" + escape(feature.properties["NBRHOOD"]);
 						});
 
 					map.addCallback("drawn", tm.render.modestmaps);

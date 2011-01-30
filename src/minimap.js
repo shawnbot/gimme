@@ -1,6 +1,7 @@
 /**
  * This is a minimal version of Polymaps that contains *no* SVG rendering code.
- * You can instantiate a map, set the center, zoom, extent, etc.
+ * You can instantiate a map, set the center, zoom, extent, and size; then use
+ * locationPoint() to project {lon,lat} objects into screen coordinates.
  */
 if (!org) var org = {};
 if (!org.polymaps) org.polymaps = {};
