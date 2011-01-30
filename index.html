@@ -36,6 +36,42 @@
 		</div>
 
 		<div class="example">
+			<h2>ModestMaps tiled backgrounds</h2>
+			<p>TMI can overlay transparent image maps on top of
+			<i>non-interactive</i> <a
+				href="https://github.com/stamen/modestmaps-js">modestmaps-js</a> maps.
+			This example links <a
+				href="http://datasf.org/story.php?title=realtor-neighborhoods-">neighborhood
+				areas</a> from the San Francisco Association of Realtors (SFAR) to the
+			corresponding <a href="http://maps.google.com/maps">Google Maps</a>
+			search results.</p> 
+
+			<div class="map" id="map1">
+				<script type="text/javascript" src="lib/modestmaps.min.js"></script>
+				<script type="text/javascript" src="data/sf_hoods.js"></script>
+				<script type="text/javascript" defer="defer">
+
+					var mm = com.modestmaps,
+							provider = new mm.TemplatedMapProvider("http://c.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841af/998/256/{Z}/{X}/{Y}.png"),
+							map = new com.modestmaps.Map("map1", provider, null, null);
+
+					var center = {lat: 37.762, lon: -122.44};
+					map.setCenterZoom(center, 12);
+
+					var tm = tmi()
+						.src("data/blank.png")
+						.data(sf_hoods)
+						.attr("href", function(feature) {
+							return "http://maps.google.com/maps?q=" + escape(feature.properties["NBRHOOD"]);
+						});
+
+					map.addCallback("drawn", tm.render.modestmaps);
+
+				</script>
+			</div>
+		</div>
+
+		<div class="example">
 			<h2>Polymaps-supported Data Images</h2>
 			<p>This example consists of three pieces:</p>
 			<ol>
@@ -80,48 +116,5 @@
 			</script>
 		</div>
 
-		<div class="example">
-			<h2>ModestMaps tiled backgrounds</h2>
-			<p>TMI can overlay transparent image maps on top of
-			<i>non-interactive</i> <a
-				href="https://github.com/stamen/modestmaps-js">modestmaps-js</a> maps.
-			This example links <a
-				href="http://datasf.org/story.php?title=realtor-neighborhoods-">neighborhood
-				areas</a> from the San Francisco Association of Realtors (SFAR) to the
-			corresponding <a href="http://maps.google.com/maps">Google Maps</a>
-			search results.</p> 
-
-			<div class="map" id="map1">
-				<script type="text/javascript" src="lib/modestmaps.min.js"></script>
-				<script type="text/javascript" src="data/sf_hoods.js"></script>
-				<script type="text/javascript" defer="defer">
-
-					var mm = com.modestmaps,
-							provider = new mm.TemplatedMapProvider("http://c.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841af/998/256/{Z}/{X}/{Y}.png"),
-							map = new com.modestmaps.Map("map1", provider, null, null);
-
-					var center = {lat: 37.762, lon: -122.44};
-					map.setCenterZoom(center, 12);
-
-					var tm = tmi()
-						.src("data/blank.png")
-						.data(sf_hoods)
-						.attr("href", function(feature) {
-							return "http://maps.google.com/maps?q=" + escape(feature.properties["NBRHOOD"]);
-						});
-
-					map.addCallback("drawn", tm.render.modestmaps);
-
-				</script>
-			</div>
-		</div>
-
-
-		<p>
-			<img src="data/blank.png" width="300" height="300" usemap="#test"/>
-			<map name="test">
-				<area href="#foo" alt="foo" shape="circle" coords="150,150,10"/>
-			</map>
-		</p>
 	</body>
 </html>

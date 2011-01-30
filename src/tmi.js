@@ -1,7 +1,7 @@
-(function(ns) {
+(function(exports) {
   var TMI_ID = 0;
 
-	ns.tmi = function() {
+	exports.tmi = function() {
 		var tmi = {},
 				proj = null,
 				container = null,
@@ -172,6 +172,11 @@
 				throw new Error("tmi.render() needs a proj()");
 			}
 
+			// append the <map> to the DOM in the <img>'s parent
+			if (!map.parentNode && img.parentNode) {
+				img.parentNode.appendChild(map);
+			}
+
 			// clear the map
 			while (map.firstChild) {
 				map.removeChild(map.firstChild);
@@ -310,4 +315,4 @@
 		return tmi;
 	};
 
-})(window);
+})(window); // FIXME
