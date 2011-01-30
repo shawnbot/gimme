@@ -310,18 +310,4 @@
 		return tmi;
 	};
 
-	tmi.delegate = function(func, caller) {
-		return function() {
-			return func.apply(caller, arguments);
-		};
-	};
-
-	tmi.slave = {};
-
-	tmi.slave.modestmaps = function(tm) {
-		return function() {
-		}
-		return renderOnce;
-	};
-
 })(window);

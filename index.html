@@ -1,12 +1,11 @@
 <html>
 	<head>
-		<title>tmi: Tiled Map Images</title>
+		<title>TMI: Tiled Map Images</title>
 		<script type="text/javascript" src="src/tmi.js"></script>
 		<style type="text/css">
 
-			.map {
-				float: left;
-				margin: 0 1em 1em 0;
+			.example {
+				margin: 1em 0;
 			}
 
 			#map1 {
@@ -19,58 +18,94 @@
 		</style>
 	</head>
 	<body>
-		<div class="map" id="map1">
-			<script type="text/javascript" src="lib/modestmaps.min.js"></script>
-			<script type="text/javascript" src="data/sf_hoods.js"></script>
+		<div class="intro">
+			<h1>TMI: Tiled Map Images</h1>
+
+			<p>TMI is a JavaScript library for creating
+				<a href="http://www.w3.org/TR/html401/struct/objects.html#client-side-maps">HTML image maps</a>
+				from geographic feature data in <a href="http://geojson.org/">GeoJSON format</a>. It uses other,
+				tried-and-true libraries (such as <a
+					href="http://modestmaps.com">ModestMaps</a> and <a
+					href="http://polymaps.org">Polymaps</a>) to project <a
+					href="http://en.wikipedia.org/wiki/Geographic_coordinate_system">geographic
+					coordinates</a> into screen coordinates, and can easily be backed
+				onto other libraries that provide similar functionality.</p>
+
+			<p><strong>The goal of TMI is to make linked maps a reality in both ancient and
+				modern web browsers.</strong></p>
+		</div>
+
+		<div class="example">
+			<h2>Polymaps-supported Data Images</h2>
+			<p>This example demonstrates how to:</p>
+			<ul>
+				<li>store geographic information (in this case, latitude, longitude and zoom level) along with a static image using <a href="http://dev.w3.org/html5/spec/Overview.html#embedding-custom-non-visible-data-with-the-data-attributes">HTML5 custom data attributes</a>.</li>
+				<li>use a <a href="src/minimap.js">stripped-down version</a> of <a href="http://polymaps.org">Polymaps</a> for client-side coordinate projection (<strong>Note: no SVG is generated in this example.</strong>)</li>
+			</ul>
+			<div class="map" id="map2">
+				<script type="text/javascript" src="src/minimap.js"></script>
+				<script type="text/javascript" src="data/mission.js"></script>
+				<img src="data/mission.png" width="400" height="400" data-center="-122.414826,37.759962" data-zoom="14"/>
+			</div>
 			<script type="text/javascript" defer="defer">
 
-				var mm = com.modestmaps,
-						provider = new mm.TemplatedMapProvider("http://c.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841af/998/256/{Z}/{X}/{Y}.png"),
-						map = new com.modestmaps.Map("map1", provider, null, null);
+				var img = document.getElementById("map2").getElementsByTagName("img")[0],
+						size = {x: parseInt(img.getAttribute("width")), y: parseInt(img.getAttribute("height"))},
+						center = img.getAttribute("data-center").split(",").map(parseFloat),
+						zoom = parseFloat(img.getAttribute("data-zoom"));
+				var map = org.polymaps.map()
+					.size(size)
+					.center({lon: center[0], lat: center[1]})
+					.zoom(zoom);
 
-				var center = {lat: 37.762, lon: -122.44};
-				map.setCenterZoom(center, 12);
+				mission.properties.href = "http://missionmission.wordpress.com";
 
 				var tm = tmi()
-					.src("data/blank.png")
-					.data(sf_hoods)
-					.attr("href", function(feature) {
-						return "data/" + feature.properties["NBRHOOD"] + ".html";
-					});
+					.img(img)
+					.data(mission)
+					.size(size)
+					.proj(map.locationPoint);
 
-				map.addCallback("drawn", tm.render.modestmaps);
+				tm.render();
 
 			</script>
 		</div>
 
-		<div class="map" id="map2">
-			<script type="text/javascript" src="lib/polymaps.min.js"></script>
-			<script type="text/javascript" src="data/mission.js"></script>
-			<img src="data/mission.png" width="400" height="400" data-center="-122.414826,37.759962" data-zoom="14"/>
+		<div class="example">
+			<h2>ModestMaps tiled backgrounds</h2>
+			<p>TMI can overlay transparent image maps on top of
+			<i>non-interactive</i> <a
+				href="https://github.com/stamen/modestmaps-js">modestmaps-js</a> maps.
+			This example links to neighborhoods from the San Francisco Association of
+			Realtors (SFAR), converted from an <a
+				href="http://datasf.org/story.php?title=realtor-neighborhoods-">ESRI
+				shapefile</a> to GeoJSON using <a href="http://www.gdal.org/ogr2ogr.html">ogr2ogr</a>.</p>
+
+			<div class="map" id="map1">
+				<script type="text/javascript" src="lib/modestmaps.min.js"></script>
+				<script type="text/javascript" src="data/sf_hoods.js"></script>
+				<script type="text/javascript" defer="defer">
+
+					var mm = com.modestmaps,
+							provider = new mm.TemplatedMapProvider("http://c.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841af/998/256/{Z}/{X}/{Y}.png"),
+							map = new com.modestmaps.Map("map1", provider, null, null);
+
+					var center = {lat: 37.762, lon: -122.44};
+					map.setCenterZoom(center, 12);
+
+					var tm = tmi()
+						.src("data/blank.png")
+						.data(sf_hoods)
+						.attr("href", function(feature) {
+							return "data/" + feature.properties["NBRHOOD"] + ".html";
+						});
+
+					map.addCallback("drawn", tm.render.modestmaps);
+
+				</script>
+			</div>
 		</div>
-		<script type="text/javascript" defer="defer">
 
-			var img = document.getElementById("map2").getElementsByTagName("img")[0],
-					size = {x: parseInt(img.getAttribute("width")), y: parseInt(img.getAttribute("height"))},
-					center = img.getAttribute("data-center").split(",").map(parseFloat),
-					zoom = parseFloat(img.getAttribute("data-zoom"));
-			var map = org.polymaps.map()
-				.size(size)
-				.center({lon: center[0], lat: center[1]})
-				.zoom(zoom);
-
-			var tm = tmi()
-				.img(img)
-				.data(mission)
-				.attr("href", function(feature) {
-					return "data/" + feature.properties["NBRHOOD"] + ".html";
-				})
-				.size(size)
-				.proj(map.locationPoint);
-
-			tm.render();
-
-		</script>
 
 		<p>
 			<img src="data/blank.png" width="300" height="300" usemap="#test"/>
