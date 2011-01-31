@@ -1,8 +1,8 @@
 (function(exports) {
-  var TMI_ID = 0;
+  var GIMME_ID = 0;
 
-	exports.tmi = function() {
-		var tmi = {},
+	exports.gimme = function() {
+		var gim = {},
 				proj = null,
 				container = null,
 				data = null,
@@ -12,7 +12,7 @@
 		var img = document.createElement("img"),
 				map = document.createElement("map");
 		// default size fills the container
-		img.setAttribute("class", "tmi");
+		img.setAttribute("class", "gim");
 		img.setAttribute("width", "100%");
 		img.setAttribute("height", "100%");
 
@@ -23,28 +23,28 @@
 		}
 
 		// <map> "name" attribute
-		tmi.name = function(name) {
+		gim.name = function(name) {
 			if (arguments.length) {
 				map.setAttribute("name", name);
 				img.setAttribute("usemap", "#" + name);
-				return tmi;
+				return gim;
 			} else {
 				return map.getAttribute("name");
 			}
 		};
 
 		// get/set size; NOTE: these may be percentages!
-		tmi.size = function(w, h) {
+		gim.size = function(w, h) {
 			// two arguments: width, height
 			if (arguments.length == 2) {
 				img.setAttribute("width", w);
 				img.setAttribute("width", h);
-				return tmi;
+				return gim;
 			// one argument: {x, y}
 			} else if (arguments.length == 1) {
 				img.setAttribute("width", w.x);
 				img.setAttribute("height", w.y);
-				return tmi;
+				return gim;
 			// no arguments: return "width" and "height" attributes as {x, y}
 			} else {
 				return {x: img.getAttribute("width"),
@@ -52,42 +52,44 @@
 			}
 		};
 
-		tmi.img = function(el) {
+		// get set the target <img> element
+		gim.img = function(el) {
 			if (arguments.length) {
 				img = getElement(el);
-				img.setAttribute("usemap", "#" + tmi.name());
-				return tmi;
+				img.setAttribute("usemap", "#" + gim.name());
+				return gim;
 			} else {
 				return img;
 			}
 		};
 
-		tmi.map = function(el) {
+		// get set the target <map> element
+		gim.map = function(el) {
 			if (arguments.length) {
 				map = getElement(el);
-				img.setAttribute("usemap", "#" + tmi.name());
-				return tmi;
+				img.setAttribute("usemap", "#" + gim.name());
+				return gim;
 			} else {
-				return img;
+				return map;
 			}
 		};
 
 		// <img> "src" attribute
-		tmi.src = function(src) {
+		gim.src = function(src) {
 			if (arguments.length) {
 				if (typeof src == "undefined") {
 					img.removeAttribute("src");
 				} else {
 					img.setAttribute("src", src);
 				}
-				return tmi;
+				return gim;
 			} else {
 				return img.getAttribute("src");
 			}
 		};
 
 		// the <img> and <map> container
-		tmi.container = function(c) {
+		gim.container = function(c) {
 			if (arguments.length) {
 				if (container) {
 					container.removeChild(img);
@@ -98,34 +100,34 @@
 					container.appendChild(img);
 					container.appendChild(map);
 				}
-				return tmi;
+				return gim;
 			} else {
 				return container;
 			}
 		};
 
 		// the proj function, e.g. modestmaps.js Map.locationPoint()
-		tmi.proj = function(func) {
+		gim.proj = function(func) {
 			if (arguments.length) {
 				proj = func;
-				return tmi;
+				return gim;
 			} else {
 				return proj;
 			}
 		};
 
 		// GeoJSON data to render
-		tmi.data = function(d) {
+		gim.data = function(d) {
 			if (arguments.length) {
 				data = d;
-				return tmi;
+				return gim;
 			} else {
 				return data;
 			}
 		};
 
 		// get/set attributes for each <area>
-		tmi.attr = function(attr, value) {
+		gim.attr = function(attr, value) {
 			// two args: set attr value
 			if (arguments.length == 2) {
 
@@ -134,7 +136,7 @@
 				} else {
 					attrs[attr] = value;
 				}
-				return tmi;
+				return gim;
 			// if only one arg...
 			} else if (arguments.length == 1) {
 				// get attr value
@@ -143,7 +145,7 @@
 				// set all attributes
 				} else {
 					attrs = attr;
-					return tmi;
+					return gim;
 				}
 			// get all attributes
 			} else {
@@ -153,23 +155,23 @@
 
 		// radius getter for Point geometries:
 		// radius(feature) -> number or percentage
-		tmi.radius = function(r) {
+		gim.radius = function(r) {
 			if (arguments.length) {
 				if (typeof r != "function") {
 					radius = function() { return r; };
 				} else {
 					radius = r;
 				}
-				return tmi;
+				return gim;
 			} else {
 				return radius;
 			}
 		};
 
 		// render data to the <map>
-		tmi.render = function() {
+		gim.render = function() {
 			if (typeof proj != "function") {
-				throw new Error("tmi.render() needs a proj()");
+				throw new Error("gim.render() needs a proj()");
 			}
 
 			// append the <map> to the DOM in the <img>'s parent
@@ -187,21 +189,21 @@
 			} else {
 				// console.log("NO DATA!");
 			}
-			return tmi;
+			return gim;
 		};
 
 		// ModestMaps Map callback renderer
-		tmi.render.modestmaps = function(modestmap, message) {
+		gim.render.modestmaps = function(modestmap, message) {
 			// append to map parent and push our <img> to the front
-			tmi.container(modestmap.parent);
-			var img = tmi.img();
+			gim.container(modestmap.parent);
+			var img = gim.img();
 			img.style.position = "absolute";
 			img.style.zIndex = 1000;
 
 			// wrap locationPoint so it's bound to the Map instance
-			tmi.proj(function(loc) { return modestmap.locationPoint(loc); });
-			tmi.size(modestmap.dimensions);
-			tmi.render();
+			gim.proj(function(loc) { return modestmap.locationPoint(loc); });
+			gim.size(modestmap.dimensions);
+			gim.render();
 		};
 
 		function render(data) {
@@ -306,13 +308,13 @@
 		}
 
 		// set the default name
-		tmi.name("tmi" + (++TMI_ID));
+		gim.name("gim" + (++GIMME_ID));
 		// assume that we'll get an "href" property for each feature
-		tmi.attr("href", function(feature) { return feature.properties.href; });
+		gim.attr("href", function(feature) { return feature.properties.href; });
 		// default radius is 5px
-		tmi.radius(5);
+		gim.radius(5);
 
-		return tmi;
+		return gim;
 	};
 
 })(window); // FIXME
