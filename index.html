@@ -1,0 +1,148 @@
+<html>
+	<head>
+		<title>Gimme: Geographic Image Maps</title>
+		<script type="text/javascript" src="src/gimme.js"></script>
+		<style type="text/css">
+
+			.example {
+				margin: 1em 0;
+			}
+
+			#map1 {
+				width: 550px;
+				height: 550px;
+				background: #eee;
+				border: 1px solid #999;
+			}
+
+			pre.code {
+				background: #eee;
+				border: 1px solid #ccc;
+				padding: 1em;
+				margin: 1em 0;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="intro">
+			<h1>Gimme: Tiled Map Images</h1>
+
+			<p>Gimme is a JavaScript library for creating
+				<a href="http://www.w3.org/TR/html401/struct/objects.html#client-side-maps">HTML image maps</a>
+				from geographic feature data in <a href="http://geojson.org/">GeoJSON format</a>. It uses other,
+				tried-and-true libraries (such as <a
+					href="http://modestmaps.com">ModestMaps</a> and <a
+					href="http://polymaps.org">Polymaps</a>) to project <a
+					href="http://en.wikipedia.org/wiki/Geographic_coordinate_system">geographic
+					coordinates</a> into screen coordinates, and can easily be backed
+				onto other libraries that provide similar functionality.</p>
+
+			<p><em>The goal of gimme is to make geographic image maps a reality
+				in both ancient and modern web browsers.</em></p>
+		</div>
+
+		<div class="example">
+			<h2>ModestMaps tiled backgrounds</h2>
+			<p>Gimme can overlay transparent image maps on top of
+			<i>non-interactive</i> <a
+				href="https://github.com/stamen/modestmaps-js">modestmaps-js</a> maps.
+			This example links <a
+				href="http://datasf.org/story.php?title=realtor-neighborhoods-">neighborhood
+				areas</a> from the San Francisco Association of Realtors (SFAR) to the
+			corresponding <a href="http://maps.google.com/maps">Google Maps</a>
+			search results.</p> 
+
+			<div class="map" id="map1">
+				<script type="text/javascript" src="lib/modestmaps.min.js"></script>
+				<script type="text/javascript" src="data/sf_hoods.js"></script>
+			</div>
+			<script type="text/javascript" class="code" defer="defer">
+
+				var mm = com.modestmaps,
+						provider = new mm.TemplatedMapProvider("http://c.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841af/998/256/{Z}/{X}/{Y}.png"),
+						map = new com.modestmaps.Map("map1", provider, null, null);
+
+				var center = {lat: 37.762, lon: -122.44};
+				map.setCenterZoom(center, 12);
+
+				var gim = gimme()
+					.src("data/blank.png")
+					.data(sf_hoods)
+					.attr("href", function(feature) {
+						return "http://maps.google.com/maps?q=" + escape(feature.properties["NBRHOOD"]);
+					});
+
+				map.addCallback("drawn", gim.render.modestmaps);
+
+			</script>
+		</div>
+
+		<div class="example">
+			<h2>Polymaps-supported Data Images</h2>
+			<p>This example consists of three pieces:</p>
+			<ol>
+				<li>a static image of the Mission neighborhood in San Francisco (stolen
+				from <a href="http://shawnbot.github.com/geoff/">geoff</a>) that stores
+				the map projection info in <a
+					href="http://dev.w3.org/html5/spec/Overview.html#embedding-custom-non-visible-data-with-the-data-attributes">HTML
+					custom data attributes</a></li>
+				<li>a <a href="data/mission.js">GeoJSON</a> representation of the
+				Mission neighborhood polygon</li>
+				<li>a <a href="src/minimap.js">stripped-down version</a> of <a
+					href="http://polymaps.org">Polymaps</a> for client-side coordinate
+				projection (<em>Note: no SVG is generated in this example.</em>)</li>
+			</ol>
+			<div class="map" id="map2">
+				<script type="text/javascript" src="src/minimap.js"></script>
+				<script type="text/javascript" src="data/mission.js"></script>
+				<img src="data/mission.png" width="400" height="400" data-center="-122.414826,37.759962" data-zoom="14"/>
+			</div>
+			<script type="text/javascript" class="code" defer="defer">
+
+				var img = document.getElementById("map2").getElementsByTagName("img")[0],
+						size = {x: parseInt(img.getAttribute("width")), y: parseInt(img.getAttribute("height"))},
+						center = img.getAttribute("data-center").split(","),
+						zoom = parseInt(img.getAttribute("data-zoom"));
+				var map = org.polymaps.map()
+					.size(size)
+					.center({lon: parseFloat(center[0]), lat: parseFloat(center[1])})
+					.zoom(zoom);
+
+				mission.properties.href = "http://missionmission.wordpress.com";
+
+				var gim = gimme()
+					.img(img)
+					.data(mission)
+					.size(size)
+					.proj(map.locationPoint);
+
+				gim.render();
+
+			</script>
+		</div>
+
+		<script type="text/javascript">
+			function format(code) {
+				var lines = code.split(/[\n\r]+/).slice(1, -1);
+				var leading = lines[0].match(/^(\s+)/)[0],
+						replace = new RegExp("^" + leading);
+				return lines.map(function(line) {
+					return line.replace(replace, "").replace(/\t/g, "  ");
+				}).join("\n");
+			}
+
+			var scripts = document.getElementsByTagName("script");
+			for (var i = 0; i < scripts.length; i++) {
+				var script = scripts[i];
+				if (script.getAttribute("class") == "code") {
+					var block = document.createElement("pre");
+					block.setAttribute("class", "code");
+					block.appendChild(document.createTextNode(format(script.firstChild.nodeValue)));
+					script.parentNode.appendChild(block);
+				}
+			}
+		</script>
+
+	</body>
+</html>

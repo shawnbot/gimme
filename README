@@ -1,0 +1,9 @@
+Gimme is a JavaScript library for creating HTML image maps from geographic
+feature data in GeoJSON format. It uses other, tried-and-true libraries (such
+as ModestMaps and Polymaps) to project geographic coordinates into screen
+coordinates, and can easily be backed onto other libraries that provide similar
+functionality.
+
+The goal of gimme is to make geographic image maps a reality in both ancient
+and modern web browsers.
+
